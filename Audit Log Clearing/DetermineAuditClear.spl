@@ -1,0 +1,5 @@
+```To observe relevant activity regarding audit clearing, investigate Change datamodel for quick results. Adjust destination name accordingly.```
+
+| from datamodel:Change.All_Changes
+| search dest=DestName
+| stats count values(user) values(dest) values(result) values(action) values(result_id) values(sourcetype) values(change_type) by _time

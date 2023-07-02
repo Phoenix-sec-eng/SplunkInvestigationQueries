@@ -1,0 +1,9 @@
+```Searches for typical SQL injection URLs. Adjust index and source IP address accordingly.```
+
+index=firewalllogs src="00.000.00.00" url IN (*IKO*, *script*, log, "*1=1*", var) status=200
+| eval url = urldecode(url)
+| eval url=replace(url,"(.{100})","\1
+")
+| stats values(src) values(dest) values(http_method) count values(action) by _time, status, url
+| convert ctime(_time)
+| rename values(*) as *

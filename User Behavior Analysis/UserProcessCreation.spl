@@ -1,0 +1,5 @@
+``` Displays all processes created for a given username. Adjust index and username accordingly.```
+
+index=wineventlog user="UserName" 
+| stats values(action) values(CommandLine) values(host) values(dest) values(new_process_name) values(parent_process_name) values(signature) values(src_user) by _time 
+| convert ctime(_time)

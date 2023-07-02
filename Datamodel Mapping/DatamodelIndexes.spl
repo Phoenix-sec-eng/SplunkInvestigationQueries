@@ -1,0 +1,12 @@
+```Displays all datamodels and their mapped indeces and sourcetypes.```
+
+| tstats summariesonly=true c as count from datamodel="Authentication" by index, sourcetype | eval datamodel="Authentication" | fields index, sourcetype, datamodel
+| append [ | tstats summariesonly=true c as count from datamodel="Web" by index, sourcetype | eval datamodel="Web" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Email" by index, sourcetype | eval datamodel="Email" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Intrusion_Detection" by index, sourcetype | eval datamodel="Intrusion_Detection" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Malware" by index, sourcetype | eval datamodel="Malware" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Endpoint" by index, sourcetype | eval datamodel="Endpoint" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Network_Resolution" by index, sourcetype | eval datamodel="Network_Resolution" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Network_Traffic" by index, sourcetype | eval datamodel="Network_Traffic" | fields index, sourcetype, datamodel]
+| append [ | tstats summariesonly=true c as count from datamodel="Network_Sessions" by index, sourcetype | eval datamodel="Network_Sessions" | fields index, sourcetype, datamodel]
+| stats values(datamodel) as "datamodel" by index, sourcetype

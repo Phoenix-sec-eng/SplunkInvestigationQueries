@@ -1,0 +1,7 @@
+```Quick tstats search to observe what type of signatures have been created in a given timeframe.```
+
+|tstats count from datamodel=Intrusion_Detection where IDS_Attacks.signature!="unknown" by IDS_Attacks.src IDS_Attacks.signature summariesonly=t
+|rename IDS_Attacks.* as *
+|join src type=left 
+	[|tstats values(All_Traffic.user) as users from datamodel=Network_Traffic by All_Traffic.src summariesonly=t
+	|rename All_Traffic.* as *]

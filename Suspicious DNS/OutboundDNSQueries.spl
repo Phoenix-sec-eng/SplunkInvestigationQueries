@@ -1,0 +1,6 @@
+```To observe outbound DNS queries to a given domain. Change index, IP address of the host, and the domain name accordingly.```
+
+Index=Firewall or web logs client_ip="client IP#" query_domain="*.cn*" 
+|stats earliest(_time) as firstSeen count by query_domain
+|convert ctime(*Seen)
+|sort -count

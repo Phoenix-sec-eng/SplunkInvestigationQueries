@@ -1,0 +1,6 @@
+```Searches for all authenticating users from a given IP address. Adjust the index and source IP address accordingly.```
+
+Index=VPN/wineventlogs/firewall(some) src_ip=000.000.00.000
+| stats count values(action) earliest(_time) as "firstSeen" latest(_time) as "lastSeen" by src user
+| convert ctime("*Seen*)
+| rename values(*) as *

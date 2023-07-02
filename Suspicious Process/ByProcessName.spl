@@ -1,0 +1,4 @@
+```Search based on the process name and which users might have ran it. Adjust the process name.```
+
+| tstats summariesonly=t fillnull_value=Unknown values(Processes.process) 
+from datamodel=Endpoint.Processes where Processes.process IN (*ProcessName*) by _time span=24h, Processes.process_name, Processes.user

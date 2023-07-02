@@ -1,0 +1,12 @@
+```It will display great deal for a provided username. Therefore, you can observe what the user accessed and what process they ran.Adjust the username accordingly.```
+
+index=wineventlog (source=WinEventLog:Security OR source=XmlWinEventLog:Security) EventCode=4648 src_user="UserName" OR "AnotherUserName" 
+| fields _time, action, src_user, user, ProcessName, Process_Name, ProcessId, Process_ID, Computer, ComputerName, Target_Server_Name, TargetServerName, TargetInfo, Additional_Information, src_nt_domain, dest_nt_domain, IpAddress, Network_Address 
+| eval TargetServerName=coalesce(TargetServerName, Target_Server_Name), TargetInfo=coalesce(TargetInfo, Additional_Information), Computer=coalesce(Computer, ComputerName), IpAddress=coalesce(IpAddress, Network_Address), process_path=coalesce(ProcessName, Process_Name), process_id=coalesce(ProcessId, Process_ID) 
+| eval process_name=mvindex(split(process_path, "\\"),-1), src_user=lower(src_user), user=lower(user) 
+| eval dest=if(TargetServerName="localhost" OR TargetServerName="-" OR isnull(TargetServerName), Computer, TargetServerName) 
+| eval src=case(match(TargetServerName, Computer), Computer, TargetServerName="localhost" AND isnull(IpAddress) OR IpAddress="-", Computer, TargetServerName="localhost", IpAddress, 1==1, Computer) 
+| fillnull value="unknown" 
+| rename IpAddress as ip 
+| table _time, action, src_nt_domain, src_user, dest_nt_domain, user, src, dest, TargetInfo, ip, process_path, process_name, process_id 
+| search src_user=UserName

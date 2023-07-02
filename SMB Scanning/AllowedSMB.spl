@@ -1,0 +1,14 @@
+```Displays all allowed SMB traffic.```
+
+| tstats summariesonly=t fillnull_value=unknown values(All_Traffic.bytes_in) values(All_Traffic.bytes_out) values(All_Traffic.src) values(All_Traffic.dest) values(All_Traffic.host) values(All_Traffic.dest_port) earliest(_time) as firstseen latest(_time) as lastseen from datamodel=Network_Traffic.All_Traffic where (All_Traffic.dest_port=445 AND All_Traffic.action!=blocked) by All_Traffic.action
+| convert ctime(*seen)
+| rename All_Traffic.* as *
+| rename values(*) as *
+| search bytes_in!=unknown
+| search bytes_out!=unknown
+| eval mb_in=((bytes_in/1024)/1024)
+| eval mb_out=((bytes_out/1024)/1024)
+| eval byte_severity=case(mb_in<1, "Low", mb_in>=1 AND mb_in<=250, "Mid", mb_in>250, "High")
+| search byte_severity!=Low
+| stats values(host) values(dest_port) values(firstseen) values(lastseen) count values(action) by byte_severity, src, dest
+| sort count desc

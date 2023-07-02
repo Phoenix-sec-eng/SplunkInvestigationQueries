@@ -1,0 +1,4 @@
+```Quick look into process relationships for a given process name. Adjust index/indexes and process name accordingly.```
+
+index=wineventlog/EDR/AV "ProcessName"
+| stats values(action) values(host) values(new_process_name) values(parent_process_name) values(ParentProcessName) values(Process_Command_Line) values(source) values(src_user)

@@ -1,0 +1,9 @@
+```Datamodel search (can be used as tstats as well) for list of URLs to observe traffic and to spot any downloads.```
+
+|from datamodel:Web.Web
+|search src= "src IP#" url IN (*kali*, *Kali*, *exploit*, *metasploit*, *Metasploit*, *offensive-security*, *download*)
+|fillnull value="N/A"
+|stats count values(src) values(dest) values(http_method) values(http_user_agent) earliest(_time) as firstSeen latest(_time) as lastSeen by user, action, status, url
+|rename values(*) as *
+|convert ctime(*Seen)
+|dedup url

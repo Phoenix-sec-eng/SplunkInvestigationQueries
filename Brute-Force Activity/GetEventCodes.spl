@@ -1,0 +1,11 @@
+```To directly search WindowsEventLogs for a username and see what type of activity recorded. Adjust the index name and username accordingly.```
+
+index=wineventlog 
+| search user = "*UserName*"
+| search src = 00.00.00.000
+| stats count values(action) values(EventCode) by _time
+| rename values(*) as *
+| convert ctime(_time)
+| bin _time span=10m
+| sort _time desc
+| dedup desc

@@ -1,0 +1,4 @@
+```To observe and create dashboard for all byte transfer associated with all traffic observed excluding internal networks. ```
+
+| tstats `summariesonly` count sum(All_Traffic.bytes_in) as bytes_in from datamodel=Network_Traffic.All_Traffic 
+WHERE NOT All_Traffic.src IN ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16") by _time span=1h

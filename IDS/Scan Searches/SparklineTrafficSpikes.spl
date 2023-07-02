@@ -1,0 +1,7 @@
+```Creates visulization of network traffic spikes in an environment. Adjust index and IP addresses and the port accordingly.```
+
+index=firewall src=00.000.000.00 dest=00.000.000.00 dest_port=00
+| stats values(srcfamily) values(dest_zone) values(protocol_version) sparkline count by type, action, ftnt_action, user, host
+| rename values(*) as *
+| convert ctime(_time)
+

@@ -1,0 +1,9 @@
+```If multiple accounts with similar naming is observed, this search can give general idea about the events. Adjust index and username accordingly.```
+
+ 
+index=[logs] sourcetype=[probably event logs] user="UserName*"
+| stats values(user) values(dest) values(action) values(EventCode) values(dest_nt_domain)
+Values(src_nt_domain) by _time
+| convert ctime(_time)
+| sort _time desc
+| bin _time span=2h

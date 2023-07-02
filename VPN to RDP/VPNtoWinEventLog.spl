@@ -1,0 +1,16 @@
+```Match the VPN username to WinEventLog username. Adjust index, username in the subsearch, and source host IP address accordingly.``` 
+
+Index = VPNlogs src_host=IP#        
+| stats values(rec_type_desc) count by _time,username                    
+| join left=VPN right=winlogon where VPN.username=winLogon.user    
+[| search 'wrench.wineventlog_index' user IN (UserName*,UserName*) "IP#"
+	 | convert ctime(_time) as TIME
+	 | stats values(src) values(dest) values(signature) earliest(TIME) latest(TIME) count by user,action]
+
+
+Alternative search:
+
+
+index=wineventlog (source=WinEventLog:Security OR source=XmlWinEventLog:Security) (EventCode=4625 AND Logon_Type=3) OR (Logon_Type=10 AND (EventCode=4624 OR EventCode=4625)) user="UserName" OR user="AnotherUserName" OR Source_Network_Address="000.000.00.000" OR IpAddress="000.000.00.000"
+|eval vpn_ip=coalesce(Source_Network_Address, IpAddress)
+|table _time EventCode vpn_ip dest src_user user Logon_Type

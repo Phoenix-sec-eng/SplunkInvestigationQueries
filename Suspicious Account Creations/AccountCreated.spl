@@ -1,0 +1,5 @@
+```Searches for action=created under relevant logs. Adjust index and source user accordingly.```
+
+index=[can be AD/domain logs or wineventlogs] src_user="UserName" action=created 
+| stats dc(user) values(user) values(dest) values(result) values(Account_Domain) by status 
+| rename values(*) as *

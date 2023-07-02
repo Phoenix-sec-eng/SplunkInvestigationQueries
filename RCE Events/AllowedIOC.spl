@@ -1,0 +1,15 @@
+```Display all allowed traffic for provided IOCs. Adjust indexes accordingly and the you can user client_ip!= as further filtering purposes.```
+
+index IN (aws-cloudfront, httpd_ess, paloalto_logs) sourcetype IN ("apache:access", "pan:traffic", "aws:cloudfront:accesslogs") 
+TERM(SourceIP#) client_ip!=00.000.* url IN (*sleep*, "*.txt*", *ScRiPt*, *script*) url!=*twitter* url!=*headshot* 
+| search url=*Pages* 
+| bin _time span=1h 
+| iplocation src 
+| eval Source_Location = Region+", "+Country 
+| rename "x_edge_detail_result_type" as Traffic_Outcome 
+| stats values(src) values(dest) values(app) values(status) values(Traffic_Outcome) values(http_method) values(ssl_cipher) values(c_port) values(url_domain) values(url) count by _time, status, http_user_agent, Source_Location 
+| convert ctime(_time) 
+| eval http_user_agent = replace(http_user_agent,"(.{50})","\1
+") 
+| rename values(*) as * 
+| sort count desc

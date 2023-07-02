@@ -1,0 +1,13 @@
+```Displays all traffic outside of United States. You can simply exclude the IP address inside of TERM or include if it is consistent. Adjust index accordingly.```
+
+index=FirewallLogs (TERM(00.000.000.00) AND dest_port=53 AND (dest!=10.* AND dest!=192.168.* AND dest!=172.16.*))
+| iplocation dest
+| search Country!="United States"
+| eval Evil_Location = Region+", "+Country
+| eval time = _time
+| eval time = strftime(_time,"%m-%d-%Y %l:%M %p")
+| bin time span=1h
+| stats values(src) as Source values(Evil_Location) values(dest_port) values(severity) values(signature) count as Event_Count by time, action, dest
+| rename values(*) as *
+| rename dest as Destination
+| sort time desc

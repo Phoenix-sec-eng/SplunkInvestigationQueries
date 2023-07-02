@@ -1,0 +1,12 @@
+```Using notable events, matches the filename detected to email logs where we can obtain further information. You can exclude subsearch and still utilize this search. ```
+
+index=Email/DLP logs
+| join type=inner signature file_name 
+[ search index=WhereNotablesLogsAt 
+| fields signature file_name] 
+| lookup dnslookup clientip AS src OUTPUT clienthost AS src_FQDN 
+| lookup dnslookup clientip AS dest OUTPUT clienthost AS dest_FQDN 
+| iplocation src 
+| stats values(src) values(src_FQDN) values(Country) values(Region) count values(dest) values(dest_FQDN) values(sender) values(recipient) values(signature) values(file_name) values(file_hash) values(action) earliest(_time) as "firstSeen" latest(_time) as "lastSeen" by sender 
+| rename values(*) as * 
+| convert ctime(*Seen)

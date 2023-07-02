@@ -1,0 +1,5 @@
+```This is a quick tstats search that will utilize Authentication datamodel and give you general display of the brute-force like activity. Requires adjusting "UserName."```
+
+| from datamodel:"Authentication.Authentication"               
+| search user="UserName" 
+| stats count values(action) values(host) values(dest) values(Logon_Type) values(EventCode) by action

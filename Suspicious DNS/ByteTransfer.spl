@@ -1,0 +1,5 @@
+```This search displays byte transfer occurring during an internet communication. Adjust index to web/firewall logs and include relevant IP addresses accordingly.```
+
+index=DNSlogs dest_ip=000.00.00.00 src_ip=000.00.00.00
+	|bin _time AS "TIME" span=1h
+	|stats values(src) values(dest) earliest(_time) as firstSeen latest(_time) as lastSeen sum(bytes_out) as bytesOut sum(bytes_in) as bytesIn values(url) by TIME

@@ -1,0 +1,6 @@
+```Displays port scan activity when source and destination IPs are consistent. Adjust index and IP addresses accordingly.```
+
+index=FirewallLogs src="00.0.000.000" dest="00.00.000.00"
+| iplocation dest
+| bin _time span=1h
+| stats dc(dest_port) as port_count values(user) count values(action) by _time

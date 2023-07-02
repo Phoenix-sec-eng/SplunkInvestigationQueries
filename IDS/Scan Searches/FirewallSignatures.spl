@@ -1,0 +1,8 @@
+```Searching events by firewall signature. Requires adjusting index and signature accordingly.```
+
+Index=firewall_logs src="000.000.00.00" signature="Signature name"
+| iplocation src 
+| lookup dnslookup clientip AS src OUTPUT clienthost AS src_FQDN 
+| stats count values(Region) as "src region" values(City) as "src_city" dc(dest) as "dest count" values(dest_port) values(signature) values(action) earliest(_time) as "firstSeen" latest(_time) as "lastSeen" by src 
+| convert ctime(*Seen) 
+| rename values(*) as *

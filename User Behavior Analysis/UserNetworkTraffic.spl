@@ -1,0 +1,5 @@
+```Timechart for a given username regarding their network traffic. Adjust username and if willing, destination IP address accordingly. Alternatively, you can exclude dest IP
+to observe all traffic. ```
+
+|tstats count from datamodel=Network_Traffic where All_Traffic.dest="0.0.0.0" All_Traffic.user="UserName" by All_Traffic.user All_Traffic.dest _time span=30m summariesonly=t
+|timechart span=30m sum(count) as count by All_Traffic.user

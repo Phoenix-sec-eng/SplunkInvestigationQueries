@@ -1,0 +1,7 @@
+```Tstats search to display processes ran for a given user and relationships of those processes to their parents, paths, etc. Adjust the username accordingly.```
+
+| tstats summariesonly=t count, values(Processes.parent_process_path) as parent_process_path, values(Processes.process_path) as process_path, earliest(Processes.process_id) 
+as process_id, earliest(Processes.parent_process_id) as parent_process_id from datamodel=Endpoint.Processes where Processes.user="UserName*" 
+by Processes.parent_process Processes.parent_process_name, Processes.process_name, Processes.process, Processes.dest, Processes.user, Processes.src_user _time span=5m 
+| `drop_dm_object_name(Processes)` 
+| search NOT *splunk*

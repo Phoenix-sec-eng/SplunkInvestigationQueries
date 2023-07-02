@@ -1,0 +1,5 @@
+```Displays last 30 day activity for a given username. Requires adjusting Authentication.src to match the username.```
+
+| tstats `summariesonly` values(Authentication.src_user) values(Authentication.dest) values(Authentication.Logon_Type) values(Authentication.Failure_Code) 
+count from datamodel="Authentication" where Authentication.src="UserName" earliest=-30d by _time,Authentication.user Authentication.src Authentication.dest Authentication.action Authentication.EventCode span=1d
+| rename values(*) as *

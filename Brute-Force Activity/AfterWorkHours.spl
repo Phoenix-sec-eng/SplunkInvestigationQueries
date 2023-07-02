@@ -1,0 +1,11 @@
+```Searches after work hours activity for a given user name. Adjust the index and username accordingly.```
+
+index=wineventlog TERM(UserName) EventCode IN (4624, 4625, 4771, 4740, 4769) 
+| rename name as Auth_Data
+| bin _time span=1h
+| eval hour = tonumber(strftime(_time,"%H"))
+| eval dow = tonumber(strftime(_time,"%w"))
+| where ((hour>=19 AND hour<=5) OR (dow IN (0, 6)))
+| stats values(AuthenticationPackageName) values(WorkstationName) values(src_is_expected) as "Expected_Source?" values(dest_is_expected) as "Expected_Dest?" count by _time, user, action, Auth_Data
+| rename values(*) as *
+| convert ctime(_time)
