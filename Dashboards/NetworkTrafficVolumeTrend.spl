@@ -1,0 +1,4 @@
+```Displays network traffic volume trend over the last 7 days.```
+
+| tstats summariesonly=true allow_old_summaries=true sum(All_Traffic.bytes) as volume from datamodel=Network_Traffic.All_Traffic groupby _time span=1d 
+| eval volume=round(volume/1024/1024/1024,2)

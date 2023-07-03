@@ -1,0 +1,4 @@
+```Displays byte transfer for each user in the environment. ```
+
+| tstats count sum(All_Traffic.bytes) as total_bytes from datamodel=Network_Traffic by All_Traffic.user summariesonly=t 
+| sort 10 -total_bytes

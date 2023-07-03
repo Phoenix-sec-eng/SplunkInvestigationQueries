@@ -1,0 +1,18 @@
+```Can correlate information for source and destination IP within the subsearch. Displays information to observe relevance between both. 
+Adjust indexes, source and destination IP addresses accordingly.```
+
+index=weblogs(IIS, DNS, maybe firewall) src=SRC_IP dest=DEST_IP (action=allowed OR status=200) 
+| iplocation src 
+| eval src_location = Region+", "+Country 
+| eval Time = strftime(_time,"%m-%d-%Y %l:%M %p") 
+| eval url=urldecode(url)
+| fillnull value=Unknown 
+| stats values(src_location) as Source_Location values(dest) as Destination values(http_method) as Method values(http_user_agent) as User_Agent values(url) as URL values(bytes_in) as Bytes_Transferred_In values(bytes_out) as Bytes_Transferred_Out count as Event_Count by Time, src 
+| rename src as Source 
+| appendcols 
+    [ search index=weblogs (IIS, DNS, maybe firewall) src=SOURCE_IP dest=DEST_IP (action=allowed OR status=200) 
+    | iplocation dest 
+    | eval dest_location = Region+", "+Country 
+    | table dest_location] 
+| rename dest_location as Destination_Location 
+| table Time, Source, Source_Location, Destination, Destination_Location, Method, User_Agent, URL, Bytes_Transferred_In, Bytes_Transferred_Out, Event_Count

@@ -1,0 +1,8 @@
+```Displays top 5 countries with the most blocked connections to your environment.```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic where All_Traffic.action=blocked by All_Traffic.src
+| rename "All_Traffic.*" as "*" 
+| iplocation src 
+| stats sum(count) as count by Country 
+| sort - count 
+| head 5

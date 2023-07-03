@@ -1,0 +1,11 @@
+```Typically displays information regarding alerts for proprietary data being found outside of the organization's network. These alerts can come from RecordedFuture 
+or other data sources that are possibly mapped to Threat_Activity datamodel. Adjust index and URL of the destination address accordingly.```
+
+index IN (threat*, aws*, notable) (*URL*)
+| fillnull value=Unknown
+| bin _time span=1h
+| convert ctime(_time)
+| iplocation src
+| eval Source_Location = Region+", "+Country
+| stats count by _time, action, status, src, Source_Location, dest, user, url, ppf_cell
+| sort _time desc

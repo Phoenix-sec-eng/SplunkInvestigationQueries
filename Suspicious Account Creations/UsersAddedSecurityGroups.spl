@@ -1,0 +1,5 @@
+```Displays information regarding users being added to security groups using wineventlogs. Adjust index accordingly.```
+
+index=wineventlog (EventCode=4728 OR EventCode=4728 OR EventCode=4756 OR EventCode=4732)
+| table _time signature_id signature src_nt_domain src_user MemberSid user Group_Domain Group_Name dest dest_nt_domain
+| rename MemberSid AS "Target User", user as "Group Added"

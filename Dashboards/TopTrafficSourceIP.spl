@@ -1,0 +1,5 @@
+```Displays the most communicating source IP address in your environment.```
+
+| tstats summariesonly=t allow_old_summaries=t count dc(All_Traffic.dest_port) as num_dest_port dc(All_Traffic.dest_ip) as num_dest_ip from datamodel=Network_Traffic by All_Traffic.src_ip 
+| rename All_Traffic.src_ip as src 
+| sort - count

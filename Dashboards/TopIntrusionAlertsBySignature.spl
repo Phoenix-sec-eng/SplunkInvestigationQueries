@@ -1,0 +1,5 @@
+```Displays the most common signatures for detected intrusion alerts.```
+
+| tstats prestats=true summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks 
+where (IDS_Attacks.severity="critical" OR IDS_Attacks.severity="high") by _time, IDS_Attacks.signature span=10m 
+| timechart minspan=10m count by IDS_Attacks.signature useother=f

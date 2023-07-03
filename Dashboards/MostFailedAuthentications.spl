@@ -1,0 +1,9 @@
+```Displays the most failed authentications by users.```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Authentication.Authentication where Authentication.action=failure Authentication.user=* (Authentication.src=* OR Authentication.dest=*) by Authentication.src, Authentication.dest, Authentication.user 
+| rename "Authentication.*" as "*" 
+| eval source&destination=mvappend(src,dest) 
+| eventstats dc(source&destination) AS host_count by user 
+| where host_count >= 1 
+| stats first(host_count) AS hosts_authenticated by user 
+| sort - hosts_authenticated

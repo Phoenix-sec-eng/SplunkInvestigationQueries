@@ -1,0 +1,9 @@
+```Displays the top 5 highest volume of communications in your environment in megabytes.```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Network_Traffic.All_Traffic by All_Traffic.dest, All_Traffic.src, All_Traffic.bytes_out
+| rename "All_Traffic.*" as "*" 
+| stats sum(bytes_out) as bytes by src, dest 
+| eval MBytes=bytes/1024/1024
+| sort - bytes 
+| fields - bytes 
+| head 5

@@ -1,0 +1,6 @@
+```Typically uses uses Azure aad data to determine any unusual changes to a given username. Adjust username, and index. This can differ depending on which cloud vendor is being used
+in the environment.```
+
+index=msaad "UserName" sourcetype="azure:aad:audit" 
+| iplocation initiatedBy.user.ipAddress 
+| stats count values(initiatedBy.user.ipAddress) as src_ip values(initiatedBy.user.userPrincipalName) as user values(operationType) as operation_type values(Country) as country by _time activityDisplayName

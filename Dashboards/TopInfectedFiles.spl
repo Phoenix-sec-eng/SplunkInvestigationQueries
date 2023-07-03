@@ -1,0 +1,5 @@
+```Displays top files detected for being infected.```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Malware.Malware_Attacks where Malware_Attacks.action=* by Malware_Attacks.file_name
+| rename "Malware_Attacks.*" as "*" 
+| sort - count

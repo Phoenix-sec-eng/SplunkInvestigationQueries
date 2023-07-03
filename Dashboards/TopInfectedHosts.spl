@@ -1,0 +1,5 @@
+```Display the most infected hosts due to malware event.```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Malware.Malware_Attacks where Malware_Attacks.action=* by Malware_Attacks.dest 
+| rename "Malware_Attacks.*" as "*" 
+| sort - count

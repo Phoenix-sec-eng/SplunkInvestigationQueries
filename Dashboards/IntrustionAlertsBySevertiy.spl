@@ -1,0 +1,8 @@
+```Displays severity for each intrusion alerts generated over a given time frame. ```
+
+| tstats summariesonly=true allow_old_summaries=true count from datamodel=Intrusion_Detection.IDS_Attacks by IDS_Attacks.severity 
+| rename "IDS_Attacks.*" as "*" 
+| eval temp="" 
+| eval severity=case(severity=="critical","Critical",severity=="high","High",severity="medium","Medium", severity=="low","Low",severity=="informational","Informational",1=1, severity)
+| chart useother=true first(count) over temp by severity 
+| rename temp as count

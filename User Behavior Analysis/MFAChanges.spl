@@ -1,0 +1,7 @@
+```Displays MFA changes for a given user. Adjust index depending on the cloud/ IAM vendor and username.```
+
+index=msaad 
+| search "UserName" 
+| iplocation src
+| eval time = strftime(_time,"%m-%d-%Y %l:%M %p")
+| stats count values(City) values(Region) values(Country) values(action) values(status.additionalDetails) earliest(time) as "firstSeen" latest(time) as "lastSeen" by src

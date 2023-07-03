@@ -1,0 +1,4 @@
+```Displays information regarding integrated CrowdStrike alerts on Splunk. Adjust index and flagged process/filename accordingly.```
+
+index=crowdstrike file_name=NAME.exe
+| table _time dest user severity event.Tactic event.Technique event.DetectDescription file_path event.CommandLine event.AssociatedFile event.IOCType event.IOCValue action

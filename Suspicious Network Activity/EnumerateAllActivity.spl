@@ -1,0 +1,12 @@
+```Enumerates all activity by /16 subnet for public IP addresses. Adjust index and sourcetype or alternatively, use datamodel. ```
+
+index=INDEX sourcetype=SOURCETYPE
+| bin _time span=1h
+| eval TIME = strftime(_time, "%m/%y %H:%M%P")
+| rex "(?<IP_Address>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"
+| search IP_Address!=10.0.0.0/8 AND IP_Address!=192.168.0.0/16 AND IP_Address!=172.16.0.0/12)
+| rex field=IP_Address "(?<IP_Subnet>\d+\.\d+)\d+\.\d+"
+| eval sub = "0.0/16"
+| eval Subnet = IP_Subnet+"."+sub
+| stats earliest(TIME) latest(TIME) count by Subnet
+| sort count desc

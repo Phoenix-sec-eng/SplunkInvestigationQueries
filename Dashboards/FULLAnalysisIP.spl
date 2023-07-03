@@ -1,0 +1,165 @@
+```This is a full-suite analysis dashboard for a provided IP address.```
+
+<form version="1.1">
+  <label>THE IP EXAMINATION STATION</label>
+  <description>IP-based intel for the Seasoned Veteran</description>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="text" token="IPADDR">
+      <label>IP Address in Question</label>
+    </input>
+    <input type="time" token="field2">
+      <label>Timeframe</label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="text" token="INDEX">
+      <label>Index</label>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>AUTHENTICATAION DATA BY USER FOR IP ADDRESS ENTERED</title>
+      <table>
+        <title>Authentication Data by user for IP</title>
+        <search>
+          <query>`wrench_wineventlog_index`
+| search TERM($IPADDR$)
+| search EventCode IN (4624, 4625, 4740,4776, 4771)
+| stats values(src) values(dest) values(user) earliest(_time) as firstseen latest(_time) as lastseen count by EventCode, action
+| convert ctime(*seen)
+| rename values(*) as *</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>INDECES AND SOURCETYPES AFFILIATED WITH THIS IP</title>
+      <table>
+        <title>IP Indeces and Sourcetypes</title>
+        <search>
+          <query>index=* TERM($IPADDR$)
+| stats values(sourcetype) by index</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">true</option>
+        <option name="wrap">false</option>
+      </table>
+    </panel>
+    <panel>
+      <title>LOCATIONS MOST AFFILIATED WITH THIS IP</title>
+      <chart>
+        <title>IP location information</title>
+        <search>
+          <query>index=* TERM($IPADDR$)
+| iplocation src, dest
+| eval Location = Region.", ".Country
+| top limit=10 Location</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>TOP 10 USERS AFFILIATED WITH THIS IP</title>
+      <table>
+        <title>Top 10 Users</title>
+        <search>
+          <query>index=* TERM($IPADDR$)
+| fillnull value=Unknown
+| top limit=10 user</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>QUICK-GRAB MAIL DATA FOR AFFILIATED IP</title>
+      <table>
+        <title>Search for mail traffic related to this IP address</title>
+        <search>
+          <query>index IN ($INDEX$)
+| search (TERM($IPADDR$) AND TERM(mail))
+| table src, dest, SenderAddress, RecipientAddress, Status, action</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>QUICK GRAB PROCESS DATA FOR IP</title>
+      <table>
+        <title>Top 10 processes by user for IP</title>
+        <search>
+          <query>index=* TERM($IPADDR$) process=* process_name=* src=* dest=*
+| fillnull value=Unknown
+| search process!=Unknown
+| stats values(src) values(dest) values(user) values(host) values(process) earliest(_time) as firstseen latest(_time) as lastseen by process_name
+| rename values(*) as *
+| convert ctime(*seen)</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>NETWORK-BASED INFORMATION</title>
+      <table>
+        <title>Source and destination data for Network_Traffic.All_Traffic</title>
+        <search>
+          <query>index IN ($INDEX$) TERM($IPADDR$)
+| eval mb_in=((bytes_in/1024)/1024)
+| eval mb_out=((bytes_out/1024)/1024)
+| table _time, src, dest, user, dest_port, mb_in, mb_out, action
+| sort mb_in, mb_out desc</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Dests for the IP</title>
+        <search>
+          <query>index IN ($INDEX$) TERM($IPADDR$)
+| fillnull value=Unknown
+| stats values(dest) by src</query>
+          <earliest>$field2.earliest$</earliest>
+          <latest>$field2.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">preview</option>
+      </table>
+    </panel>
+  </row>
+</form>
